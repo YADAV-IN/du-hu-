@@ -30,6 +30,11 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,duhubunofficial.local').split(',')
 
+# Vercel domain support
+if os.environ.get("VERCEL_URL"):
+    ALLOWED_HOSTS.append(os.environ.get("VERCEL_URL"))
+    ALLOWED_HOSTS.append(".vercel.app")
+
 # DU HUB UNOFFICIAL Domain
 SITE_NAME = 'DU HUB UNOFFICIAL'
 DOMAIN_NAME = 'duhubunofficial.local'
@@ -104,11 +109,14 @@ if os.environ.get('DATABASE_URL'):
         )
     }
 else:
-    # Local Development: Use SQLite
+    # Local Development / Serverless: Use SQLite
+    sqlite_name = BASE_DIR / "db.sqlite3"
+    if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV") or os.environ.get("VERCEL_URL"):
+        sqlite_name = Path("/tmp/db.sqlite3")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "NAME": sqlite_name,
         }
     }
 
@@ -156,6 +164,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # WhiteNoise Static Files Caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Vercel runtime: serve static directly without collectstatic
+if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV") or os.environ.get("VERCEL_URL"):
+    STATIC_ROOT = BASE_DIR / "hello_world" / "static"
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "hello_world" / "media"
