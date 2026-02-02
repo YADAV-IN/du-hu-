@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{% block title %}DU HUB UNOFFICIAL - Android Modern{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'react_native.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">DU</div>
+                    <span>DU HUB UNOFFICIAL</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/events/" class="nav-link">Events</a>
+                    <a href="/#societies" class="nav-link">Societies</a>
+                    <a href="/#chat" class="nav-link">Chat</a>
+                    <a href="{% url 'admin_login' %}" class="nav-link admin-btn">🔐 Admin</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 DU HUB UNOFFICIAL - Advanced Modern Android Design</p>
+                <p class="footer-tagline">Built for the Next Generation Students | duhubunofficial.local</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // CSRF Token for Django
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Enter Access Code - DU HUB{% endblock %}
+
+{% block content %}
+<section class="hero" style="min-height: 60vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="verify-container">
+            <div class="verify-card">
+                <div class="verify-header">
+                    <h1>🔒 This society is restricted</h1>
+                    {% if society %}
+                    <p>{{ society.name }}</p>
+                    {% endif %}
+                </div>
+
+                {% if error %}
+                <div class="error-message">
+                    ⚠️ {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST" class="verify-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="code">Enter Access Code</label>
+                        <input type="text" id="code" name="code" class="form-input" placeholder="Enter the access code" required>
+                    </div>
+
+                    <button type="submit" class="btn-verify">Verify & Access</button>
+                </form>
+
+                <div class="info-message">
+                    <p>You need an access code to view this society's content.</p>
+                    <p style="font-size: 12px;">Contact the admin if you don't have the code.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.verify-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.verify-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.verify-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.verify-header h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #FF3838;
+}
+
+.verify-header p {
+    font-size: 14px;
+    color: var(--rn-text-secondary);
+    margin: 8px 0 0;
+}
+
+.error-message {
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border-left: 4px solid #c62828;
+    font-size: 13px;
+}
+
+.verify-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rn-text-primary);
+}
+
+.form-input {
+    padding: 12px;
+    border: 2px solid var(--rn-bg-tertiary);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--rn-primary);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.btn-verify {
+    padding: 12px;
+    background: linear-gradient(135deg, var(--rn-primary), var(--rn-secondary));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-verify:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+.info-message {
+    background: #E3F2FD;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 13px;
+    border-left: 4px solid var(--rn-primary);
+}
+
+.info-message p {
+    margin: 4px 0;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create New Admin{% endblock %}
+
+{% block content %}
+<style>
+    .create-admin-page {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .create-admin-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 500px;
+        padding: 40px;
+        animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .create-admin-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .create-admin-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .create-admin-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 10px 0;
+    }
+
+    .create-admin-subtitle {
+        color: #999;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: #ccc;
+    }
+
+    .role-description {
+        background: #f5f5f5;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #666;
+        margin-top: 8px;
+        border-left: 4px solid #667eea;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 30px;
+    }
+
+    .form-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+
+    .form-btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .form-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .form-btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .form-btn-secondary:hover {
+        background: #f5f5f5;
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        border-left: 4px solid #c62828;
+    }
+
+    .success-message {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        border-left: 4px solid #2e7d32;
+    }
+
+    .role-info {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 12px;
+        color: #1565c0;
+    }
+
+    @media (max-width: 480px) {
+        .create-admin-container {
+            padding: 25px;
+        }
+
+        .create-admin-title {
+            font-size: 24px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="create-admin-page">
+    <div class="create-admin-container">
+        <div class="create-admin-header">
+            <span class="create-admin-icon">👤</span>
+            <h1 class="create-admin-title">Create Admin Account</h1>
+            <p class="create-admin-subtitle">Add a new admin user to your system</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags %}{{ message.tags }}{% else %}success{% endif %}-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            <div class="error-message">
+                {% for error in form.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="role-info">
+            💡 <strong>Tip:</strong> Each admin role comes with predefined permissions. You can customize them after creation.
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label">Username *</label>
+                <input 
+                    type="text" 
+                    name="username" 
+                    placeholder="e.g., admin_user_123"
+                    class="form-input"
+                    value="{{ request.POST.username }}"
+                    required
+                >
+                {% if form.username.errors %}
+                    <div class="error-message" style="margin-top: 8px;">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="admin@example.com"
+                    class="form-input"
+                    value="{{ request.POST.email }}"
+                    required
+                >
+                {% if form.email.errors %}
+                    <div class="error-message" style="margin-top: 8px;">{{ form.email.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Admin Role *</label>
+                <select name="admin_role" class="form-select" id="admin_role" required>
+                    <option value="">-- Select a Role --</option>
+                    <option value="super_admin">Super Admin - All Access</option>
+                    <option value="societies_admin">Societies Admin - Manage societies</option>
+                    <option value="events_admin">Events Admin - Manage events</option>
+                    <option value="chat_admin">Chat Admin - Moderate chat</option>
+                    <option value="reports_admin">Reports Admin - View reports</option>
+                    <option value="limited_admin">Limited Admin - Restricted access</option>
+                </select>
+
+                <div id="role-desc" class="role-description" style="display:none;"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Assign to Society (Optional)</label>
+                <select name="society" class="form-select">
+                    <option value="">-- No Specific Society --</option>
+                    {% for society in societies %}
+                        <option value="{{ society.id }}">{{ society.name }}</option>
+                    {% endfor %}
+                </select>
+                <small style="color: #999; margin-top: 5px; display: block;">Admin can manage this society's events and members</small>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'developer_dashboard' %}" class="form-btn form-btn-secondary">Cancel</a>
+                <button type="submit" class="form-btn form-btn-primary">Create Admin ✓</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const roleDescriptions = {
+    'super_admin': '✓ Full access - Can manage all admins, societies, events, and system',
+    'societies_admin': '✓ Can create and manage societies, assign members',
+    'events_admin': '✓ Can create and manage events for societies',
+    'chat_admin': '✓ Can moderate chat, remove messages, manage channels',
+    'reports_admin': '✓ Can view analytics and generate reports (read-only)',
+    'limited_admin': '✓ Limited access - Basic management capabilities only'
+};
+
+const roleSelect = document.getElementById('admin_role');
+const roleDesc = document.getElementById('role-desc');
+
+roleSelect.addEventListener('change', function() {
+    if (this.value && roleDescriptions[this.value]) {
+        roleDesc.textContent = roleDescriptions[this.value];
+        roleDesc.style.display = 'block';
+    } else {
+        roleDesc.style.display = 'none';
+    }
+});
+</script>
+
+{% endblock %}

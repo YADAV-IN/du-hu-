@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Admin - {{ admin.user.username }}{% endblock %}
+
+{% block content %}
+<style>
+    .manage-admin-page {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .manage-admin-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .manage-admin-header {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .manage-admin-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+    }
+
+    .back-btn {
+        padding: 10px 20px;
+        background: #f5f5f5;
+        color: #333;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .back-btn:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .admin-card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 20px 0;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f5f5f5;
+    }
+
+    .info-field {
+        margin-bottom: 20px;
+    }
+
+    .info-label {
+        font-size: 12px;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .info-value {
+        font-size: 14px;
+        color: #333;
+        word-break: break-all;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-badge.inactive {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .form-section {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 20px 0;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f5f5f5;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 12px;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-select option {
+        padding: 10px;
+    }
+
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #667eea;
+    }
+
+    .checkbox-label {
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        user-select: none;
+        margin: 0;
+    }
+
+    .checkbox-item:hover {
+        background: #f5f5f5;
+        padding: 5px;
+        border-radius: 4px;
+        margin: -5px;
+    }
+
+    .permissions-note {
+        background: #e3f2fd;
+        border-left: 4px solid #1565c0;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #1565c0;
+        margin-bottom: 20px;
+    }
+
+    .society-select {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .society-select option {
+        padding: 8px;
+        margin: 2px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .form-btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+
+    .form-btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        flex: 1;
+    }
+
+    .form-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .form-btn-danger {
+        background: #ffebee;
+        color: #c62828;
+        border: 2px solid #c62828;
+    }
+
+    .form-btn-danger:hover {
+        background: #f44336;
+        color: white;
+    }
+
+    .form-btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .form-btn-secondary:hover {
+        background: #f5f5f5;
+    }
+
+    .warning-message {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #856404;
+    }
+
+    .success-message {
+        background: #e8f5e9;
+        border-left: 4px solid #2e7d32;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #1b5e20;
+    }
+
+    @media (max-width: 768px) {
+        .manage-admin-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .checkbox-group {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="manage-admin-page">
+    <div class="manage-admin-container">
+        <div class="manage-admin-header">
+            <h1 class="manage-admin-title">Manage Admin: {{ admin.user.username }}</h1>
+            <a href="{% url 'developer_dashboard' %}" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="success-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Admin Information -->
+        <div class="admin-grid">
+            <div class="admin-card">
+                <h3 class="admin-card-title">👤 Admin Information</h3>
+                <div class="info-field">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">{{ admin.user.username }}</span>
+                </div>
+                <div class="info-field">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ admin.user.email }}</span>
+                </div>
+                <div class="info-field">
+                    <span class="info-label">Status</span>
+                    <span class="status-badge {% if not admin.is_active %}inactive{% endif %}">
+                        {% if admin.is_active %}✓ Active{% else %}✗ Inactive{% endif %}
+                    </span>
+                </div>
+                <div class="info-field">
+                    <span class="info-label">Created By</span>
+                    <span class="info-value">Developer Admin</span>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h3 class="admin-card-title">📊 Role & Permissions</h3>
+                <div class="info-field">
+                    <span class="info-label">Current Role</span>
+                    <span class="info-value">{{ admin.get_role_display }}</span>
+                </div>
+                <div class="info-field">
+                    <span class="info-label">Created Date</span>
+                    <span class="info-value">{{ admin.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+                <div class="info-field">
+                    <span class="info-label">Total Societies</span>
+                    <span class="info-value">{{ admin.societies.count }}</span>
+                </div>
+                <div class="info-field">
+                    <span class="info-label">Password Changed</span>
+                    <span class="info-value">
+                        {% if credentials.password_changed %}
+                            ✓ Yes ({{ credentials.password_changed_at|date:"M d, Y" }})
+                        {% else %}
+                            ✗ No
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Role -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-section">
+                <h3 class="form-section-title">🎯 Change Admin Role</h3>
+                <div class="permissions-note">
+                    💡 Changing the role will automatically update the admin's permissions based on the new role configuration.
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Admin Role *</label>
+                    <select name="role" class="form-select" id="role-select">
+                        <option value="super_admin" {% if admin.role == 'super_admin' %}selected{% endif %}>Super Admin - All Access</option>
+                        <option value="societies_admin" {% if admin.role == 'societies_admin' %}selected{% endif %}>Societies Admin - Manage societies</option>
+                        <option value="events_admin" {% if admin.role == 'events_admin' %}selected{% endif %}>Events Admin - Manage events</option>
+                        <option value="chat_admin" {% if admin.role == 'chat_admin' %}selected{% endif %}>Chat Admin - Moderate chat</option>
+                        <option value="reports_admin" {% if admin.role == 'reports_admin' %}selected{% endif %}>Reports Admin - View reports</option>
+                        <option value="limited_admin" {% if admin.role == 'limited_admin' %}selected{% endif %}>Limited Admin - Restricted access</option>
+                    </select>
+                </div>
+                <button type="submit" name="action" value="update_role" class="form-btn form-btn-primary">Save Role Changes</button>
+            </div>
+        </form>
+
+        <!-- Assign Societies -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-section">
+                <h3 class="form-section-title">🏢 Assign Societies</h3>
+                <div class="permissions-note">
+                    💡 This admin can manage the selected societies. Leave empty for system-wide access.
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Societies *</label>
+                    <select name="societies" class="form-select society-select" multiple size="5">
+                        {% for society in all_societies %}
+                            <option value="{{ society.id }}" 
+                                {% if society in admin.societies.all %}selected{% endif %}>
+                                {{ society.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <small style="color: #999; margin-top: 5px; display: block;">Hold Ctrl/Cmd to select multiple societies</small>
+                </div>
+                <button type="submit" name="action" value="update_societies" class="form-btn form-btn-primary">Save Societies</button>
+            </div>
+        </form>
+
+        <!-- Permissions Overview -->
+        <div class="form-section">
+            <h3 class="form-section-title">🔐 Current Permissions</h3>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" disabled {% if admin.can_manage_societies %}checked{% endif %}>
+                    <label class="checkbox-label">Manage Societies</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" disabled {% if admin.can_manage_events %}checked{% endif %}>
+                    <label class="checkbox-label">Manage Events</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" disabled {% if admin.can_manage_admins %}checked{% endif %}>
+                    <label class="checkbox-label">Manage Admins</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" disabled {% if admin.can_view_reports %}checked{% endif %}>
+                    <label class="checkbox-label">View Reports</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" disabled {% if admin.can_moderate_chat %}checked{% endif %}>
+                    <label class="checkbox-label">Moderate Chat</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" disabled {% if admin.can_delete_content %}checked{% endif %}>
+                    <label class="checkbox-label">Delete Content</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deactivate Admin -->
+        <form method="post" style="margin-bottom: 30px;">
+            {% csrf_token %}
+            <div class="form-section">
+                <h3 class="form-section-title">⚠️ Danger Zone</h3>
+                <div class="warning-message">
+                    <strong>Warning:</strong> Deactivating this admin will prevent them from accessing the system. This action can be reversed later.
+                </div>
+                <div class="form-actions">
+                    {% if admin.is_active %}
+                        <button type="submit" name="action" value="deactivate" class="form-btn form-btn-danger" onclick="return confirm('Are you sure you want to deactivate this admin?')">
+                            🚫 Deactivate Admin
+                        </button>
+                    {% else %}
+                        <button type="submit" name="action" value="activate" class="form-btn form-btn-primary">
+                            ✓ Activate Admin
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

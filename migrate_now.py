@@ -1,0 +1,1 @@
+import os; import django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hello_world.settings'); django.setup(); from django.core.management import call_command; call_command('migrate'); print("✅ Migrations applied! Restart your server.")

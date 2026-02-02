@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ society.name }} - DU HUB{% endblock %}
+
+{% block content %}
+<!-- Society Hero Card -->
+<section class="section">
+    <div class="container">
+        <div class="rn-card" style="margin-bottom: 24px;">
+            <div class="society-hero-banner" style="height: 160px; background: linear-gradient(135deg, {{ society.color_theme|default:'#2196F3' }}, {{ society.color_theme|default:'#00BCD4' }}); position: relative;">
+                {% if society.is_verified %}
+                <span class="verified-badge" style="position: absolute; top: 16px; right: 16px;">✓</span>
+                {% endif %}
+            </div>
+            <div style="padding: 16px;">
+                <div style="display: flex; align-items: start; gap: 16px; margin-top: -50px;">
+                    <div class="society-logo" style="width: 80px; height: 80px; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        {% if society.logo_image %}
+                        <img src="{{ society.logo_image }}" alt="{{ society.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        {% else %}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: white; color: {{ society.color_theme|default:'#2196F3' }}; font-weight: 800; font-size: 28px; border-radius: 12px;">
+                            {{ society.name|slice:":2"|upper }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div style="flex: 1; padding-top: 40px;">
+                        <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 4px; color: var(--rn-text-primary);">{{ society.name }}</h1>
+                        {% if society.tagline %}
+                        <p style="font-size: 14px; color: var(--rn-text-secondary); margin-bottom: 12px;">{{ society.tagline }}</p>
+                        {% endif %}
+                        <span class="category-chip">{{ society.get_category_display|default:"Society" }}</span>
+                    </div>
+                </div>
+                
+                <!-- Stats Row -->
+                <div style="display: flex; gap: 16px; margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: var(--rn-primary);">{{ society.member_count|default:0 }}</div>
+                        <div style="font-size: 12px; color: var(--rn-text-secondary);">Members</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: var(--rn-primary);">{{ stats.total_events|default:0 }}</div>
+                        <div style="font-size: 12px; color: var(--rn-text-secondary);">Events</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: var(--rn-primary);">{{ society.views_count|default:0 }}</div>
+                        <div style="font-size: 12px; color: var(--rn-text-secondary);">Views</div>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                {% if society.instagram or society.linkedin or society.twitter or society.website or society.email %}
+                <div style="display: flex; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
+                    {% if society.instagram %}
+                    <a href="{{ society.instagram }}" target="_blank" class="rn-button rn-button-outlined rn-button-small" style="flex: 1;">📷 Instagram</a>
+                    {% endif %}
+                    {% if society.linkedin %}
+                    <a href="{{ society.linkedin }}" target="_blank" class="rn-button rn-button-outlined rn-button-small" style="flex: 1;">💼 LinkedIn</a>
+                    {% endif %}
+                    {% if society.website %}
+                    <a href="{{ society.website }}" target="_blank" class="rn-button rn-button-outlined rn-button-small" style="flex: 1;">🌐 Website</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- About -->
+        <div class="rn-card" style="margin-bottom: 16px;">
+            <div style="padding: 16px;">
+                <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--rn-text-primary);">About</h2>
+                <p style="font-size: 14px; color: var(--rn-text-secondary); line-height: 1.6;">
+                    {{ society.long_description|default:society.description|linebreaks }}
+                </p>
+                {% if society.president_name or society.convenor_name or society.faculty_advisor %}
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.05);">
+                    {% if society.president_name %}
+                    <div style="margin-bottom: 8px;">
+                        <span style="font-size: 12px; color: var(--rn-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">President:</span>
+                        <span style="font-size: 14px; color: var(--rn-text-primary); font-weight: 600; margin-left: 8px;">{{ society.president_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if society.convenor_name %}
+                    <div style="margin-bottom: 8px;">
+                        <span style="font-size: 12px; color: var(--rn-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Convenor:</span>
+                        <span style="font-size: 14px; color: var(--rn-text-primary); font-weight: 600; margin-left: 8px;">{{ society.convenor_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if society.faculty_advisor %}
+                    <div style="margin-bottom: 8px;">
+                        <span style="font-size: 12px; color: var(--rn-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Faculty Advisor:</span>
+                        <span style="font-size: 14px; color: var(--rn-text-primary); font-weight: 600; margin-left: 8px;">{{ society.faculty_advisor }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <h2 class="section-title" style="margin: 24px 0 16px;">📅 Upcoming Events</h2>
+        <div class="events-grid">
+            {% for event in upcoming_events %}
+            <div class="event-card">
+                <div class="event-header">
+                    <span class="event-type-badge">{{ event.get_event_type_display }}</span>
+                    <span class="event-date">{{ event.event_date|date:"M d, Y" }}</span>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <p class="event-description">{{ event.description|truncatewords:15 }}</p>
+                    <div class="event-footer">
+                        <span class="event-location">
+                            <span>📍</span>
+                            {{ event.location }}
+                        </span>
+                        {% if event.registration_link %}
+                        <a href="{{ event.registration_link }}" class="rn-button rn-button-small" target="_blank">Register</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-data">No upcoming events</p>
+            {% endfor %}
+        </div>
+
+        <!-- Team Members -->
+        {% if members %}
+        <h2 class="section-title" style="margin: 32px 0 16px;">👥 Team</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px;">
+            {% for member in members %}
+            <div class="rn-card">
+                <div style="padding: 16px; text-align: center;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 12px; border-radius: 50%; background: linear-gradient(135deg, var(--rn-primary), var(--rn-secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px;">
+                        {{ member.name|slice:":1"|upper }}
+                    </div>
+                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--rn-text-primary);">{{ member.name }}</h4>
+                    <p style="font-size: 11px; color: var(--rn-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">{{ member.get_role_display }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Chat -->
+        <h2 class="section-title" style="margin: 32px 0 16px;">💬 Society Chat</h2>
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>Member Discussion</h3>
+                <span class="online-indicator">
+                    <span class="online-dot"></span>
+                    Live
+                </span>
+            </div>
+            <div class="chat-messages" id="societyChatMessages">
+                {% for msg in chat_messages reversed %}
+                <div class="chat-message">
+                    <div class="message-avatar">{{ msg.user_name|first|upper }}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-user">{{ msg.user_name }}</span>
+                            <span class="message-time">{{ msg.created_at|date:"g:i A" }}</span>
+                        </div>
+                        <p class="message-text">{{ msg.message }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="chat-input-area">
+                <div class="input-wrapper">
+                    <input type="text" id="societyUserName" placeholder="Your Name" class="input-field">
+                    <input type="text" id="societyChatMessage" placeholder="Message..." class="input-field">
+                    <button onclick="sendSocietyMessage()" class="btn-send">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function sendSocietyMessage() {
+        const userName = document.getElementById('societyUserName').value || 'Anonymous';
+        const messageInput = document.getElementById('societyChatMessage');
+        const message = messageInput.value;
+
+        if (!message.trim()) return;
+
+        fetch('/api/chat/society/{{ society.id }}/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ user_name: userName, message })
+        })
+        .then(response => response.json())
+        .then(() => {
+            messageInput.value = '';
+            loadSocietyMessages();
+        })
+        .catch(() => {});
+    }
+
+    function loadSocietyMessages() {
+        fetch('/api/chat/society/{{ society.id }}/messages/')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('societyChatMessages');
+            if (!container) return;
+            container.innerHTML = data.messages.reverse().map(msg => `
+                <div class="chat-message">
+                    <div class="message-avatar">${msg.user_name.charAt(0).toUpperCase()}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-user">${msg.user_name}</span>
+                            <span class="message-time">${msg.created_at}</span>
+                        </div>
+                        <p class="message-text">${msg.message}</p>
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        })
+        .catch(() => {});
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSocietyMessages();
+        setInterval(loadSocietyMessages, 5000);
+        document.getElementById('societyChatMessage')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendSocietyMessage();
+        });
+    });
+</script>
+{% endblock %}

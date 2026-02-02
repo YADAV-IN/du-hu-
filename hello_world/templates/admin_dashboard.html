@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - DU HUB{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1>📊 Admin Control Panel</h1>
+            <div class="admin-controls">
+                <span class="admin-badge">{{ user.username }} {% if is_super_admin %}(Super Admin){% else %}(Admin){% endif %}</span>
+                <a href="{% url 'admin_logout' %}" class="btn-logout">Logout</a>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="admin-stats">
+            <div class="stat-box">
+                <h3>{{ total_societies }}</h3>
+                <p>Total Societies</p>
+            </div>
+            <div class="stat-box">
+                <h3>{{ total_events }}</h3>
+                <p>Total Events</p>
+            </div>
+            <div class="stat-box">
+                <h3>{{ total_messages }}</h3>
+                <p>Chat Messages</p>
+            </div>
+            <div class="stat-box">
+                <h3>{{ societies.count }}</h3>
+                <p>Managed By You</p>
+            </div>
+        </div>
+
+        <!-- Quick Access Buttons -->
+        <div class="quick-access">
+            <a href="{% url 'admin_login_records' %}" class="quick-btn">
+                <span class="quick-icon">🔐</span>
+                <span class="quick-text">Login Records</span>
+                <span class="quick-desc">View admin login history</span>
+            </a>
+        </div>
+
+        <!-- Societies Management -->
+        <div class="admin-section-box">
+            <h2>🏢 Manage Societies</h2>
+            <div class="societies-table">
+                <div class="table-header">
+                    <div class="col-name">Society Name</div>
+                    <div class="col-code">Access Code</div>
+                    <div class="col-status">Status</div>
+                    <div class="col-action">Action</div>
+                </div>
+                
+                {% for society in societies %}
+                <div class="table-row">
+                    <div class="col-name">
+                        <strong>{{ society.name }}</strong>
+                        <p style="font-size: 12px; opacity: 0.6; margin: 4px 0;">{{ society.description|truncatewords:5 }}</p>
+                    </div>
+                    <div class="col-code">
+                        {% if society.access_code %}
+                            <code class="access-code">{{ society.access_code }}</code>
+                        {% else %}
+                            <span style="color: #ff6b6b;">Not set</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-status">
+                        {% if society.is_restricted %}
+                            <span class="badge badge-restricted">🔒 Restricted</span>
+                        {% else %}
+                            <span class="badge badge-open">🔓 Open</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-action">
+                        <a href="{% url 'manage_society' society.id %}" class="btn-manage">Edit</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.admin-section {
+    padding: 20px 0;
+    background: var(--rn-bg-primary);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--rn-bg-tertiary);
+}
+
+.admin-header h1 {
+    font-size: 28px;
+    margin: 0;
+}
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, var(--rn-primary), var(--rn-secondary));
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-logout {
+    background: #FF3838;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.btn-logout:hover {
+    background: #E83838;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-box h3 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    color: var(--rn-primary);
+}
+
+.stat-box p {
+    margin: 0;
+    color: var(--rn-text-secondary);
+    font-size: 13px;
+}
+
+.admin-section-box {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.admin-section-box h2 {
+    margin: 0 0 20px;
+    font-size: 20px;
+}
+
+.societies-table {
+    border: 1px solid var(--rn-bg-tertiary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    background: var(--rn-bg-tertiary);
+    padding: 16px;
+    font-weight: 600;
+    font-size: 13px;
+    gap: 16px;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding: 16px;
+    border-top: 1px solid var(--rn-bg-tertiary);
+    gap: 16px;
+    align-items: center;
+}
+
+.table-row:first-child {
+    border-top: none;
+}
+
+.table-row:hover {
+    background: var(--rn-bg-primary);
+}
+
+.access-code {
+    background: var(--rn-bg-tertiary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-restricted {
+    background: #FFE8E8;
+    color: #C62828;
+}
+
+.badge-open {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.btn-manage {
+    background: var(--rn-primary);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+.btn-manage:hover {
+    background: var(--rn-primary-dark);
+}
+
+.quick-access {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.quick-btn {
+    background: linear-gradient(135deg, #128C7E, #075E54);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(18, 140, 126, 0.2);
+}
+
+.quick-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(18, 140, 126, 0.3);
+}
+
+.quick-icon {
+    font-size: 32px;
+}
+
+.quick-text {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.quick-desc {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .table-header,
+    .table-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}
+</style>
+{% endblock %}

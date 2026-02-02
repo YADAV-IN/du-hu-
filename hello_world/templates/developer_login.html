@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Developer Admin Login{% endblock %}
+
+{% block content %}
+<style>
+    .dev-login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+    }
+
+    .dev-login-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 450px;
+        padding: 40px;
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dev-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .dev-icon {
+        font-size: 64px;
+        margin-bottom: 15px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .dev-header h1 {
+        font-size: 28px;
+        color: #333;
+        margin: 0 0 5px 0;
+        font-weight: 700;
+    }
+
+    .dev-header p {
+        color: #666;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        font-family: 'Monaco', monospace;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: #f8f9ff;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .login-btn {
+        width: 100%;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .login-btn:active {
+        transform: translateY(0);
+    }
+
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #c62828;
+        font-size: 14px;
+    }
+
+    .dev-info {
+        background: #e3f2fd;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #1565c0;
+        border-left: 4px solid #1565c0;
+    }
+
+    .dev-info strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .back-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease;
+    }
+
+    .back-link a:hover {
+        color: #764ba2;
+    }
+
+    .security-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 480px) {
+        .dev-login-container {
+            padding: 30px 20px;
+        }
+
+        .dev-header h1 {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<div class="dev-login-wrapper">
+    <div class="dev-login-container">
+        <div class="dev-header">
+            <div class="dev-icon">👨‍💻</div>
+            <h1>Developer Console</h1>
+            <p>Master Administrator Access</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="security-badge">🔐 Secure Login</div>
+
+        <div class="dev-info">
+            <strong>Developer Access Required</strong>
+            Enter your Developer ID and Master Key to access the master control panel.
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="developer_id">👤 Developer ID</label>
+                <input 
+                    type="text" 
+                    id="developer_id" 
+                    name="developer_id" 
+                    class="form-input"
+                    placeholder="e.g., DEV001"
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="master_key">🔑 Master Key</label>
+                <input 
+                    type="password" 
+                    id="master_key" 
+                    name="master_key" 
+                    class="form-input"
+                    placeholder="Enter master key"
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <button type="submit" class="login-btn">
+                ✓ Access Developer Panel
+            </button>
+        </form>
+
+        <div class="back-link">
+            <a href="{% url 'admin_login' %}">← Admin Login</a> | 
+            <a href="{% url 'home' %}">← Home</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

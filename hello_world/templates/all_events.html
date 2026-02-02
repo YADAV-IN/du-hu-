@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Events - DU HUB{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">All Upcoming Events</h1>
+        <div class="events-grid">
+            {% for event in events %}
+            <div class="event-card">
+                <div class="event-header" style="background: linear-gradient(135deg, {{ event.society.color_theme }}22, #00000088);">
+                    <span class="event-type">{{ event.get_event_type_display }}</span>
+                    <span class="event-date">{{ event.event_date|date:"M d, Y" }}</span>
+                </div>
+                <div class="event-body">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <p class="event-society">by <a href="/society/{{ event.society.id }}/">{{ event.society.name }}</a></p>
+                    <p class="event-description">{{ event.description }}</p>
+                    <div class="event-footer">
+                        <span class="event-location">📍 {{ event.location }}</span>
+                        <span class="event-time">⏰ {{ event.event_date|date:"g:i A" }}</span>
+                    </div>
+                    {% if event.registration_link %}
+                    <a href="{{ event.registration_link }}" class="btn-register" target="_blank">Register Now</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-data">No upcoming events at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

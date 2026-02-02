@@ -1,0 +1,614 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ society.name }} - DU HUB{% endblock %}
+
+{% block content %}
+<!-- Society Hero Section -->
+<section class="society-hero" style="background: linear-gradient(135deg, {{ society.color_theme }}33, #0a0a0a), url('{{ society.banner_image }}') center/cover;">
+    <div class="hero-overlay"></div>
+    <div class="container society-hero-content">
+        <div class="society-header-grid">
+            <div class="society-logo-wrapper">
+                {% if society.logo_image %}
+                <img src="{{ society.logo_image }}" alt="{{ society.name }}" class="society-logo-large">
+                {% else %}
+                <div class="society-logo-placeholder" style="background: {{ society.color_theme }};">
+                    {{ society.name|slice:":2"|upper }}
+                </div>
+                {% endif %}
+                {% if society.is_verified %}
+                <span class="verified-badge" title="Verified Society">✓</span>
+                {% endif %}
+            </div>
+            <div class="society-header-info">
+                <span class="society-category-badge">{{ society.get_category_display|default:"Society" }}</span>
+                <h1 class="society-title">{{ society.name }}</h1>
+                {% if society.tagline %}
+                <p class="society-tagline">{{ society.tagline }}</p>
+                {% endif %}
+                <p class="society-description-short">{{ society.description|truncatewords:30 }}</p>
+                
+                <!-- Quick Stats -->
+                <div class="society-quick-stats">
+                    <div class="stat-pill">
+                        <span class="stat-icon">👥</span>
+                        <span class="stat-value">{{ society.member_count|default:0 }}+</span>
+                        <span class="stat-label">Members</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-icon">📅</span>
+                        <span class="stat-value">{{ stats.total_events|default:0 }}</span>
+                        <span class="stat-label">Events</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-icon">👁️</span>
+                        <span class="stat-value">{{ society.views_count|default:0 }}</span>
+                        <span class="stat-label">Views</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-icon">🏆</span>
+                        <span class="stat-value">{{ stats.achievements_count|default:0 }}</span>
+                        <span class="stat-label">Awards</span>
+                    </div>
+                </div>
+                
+                <!-- Social Links -->
+                <div class="society-social-links">
+                    {% if society.instagram %}
+                    <a href="{{ society.instagram }}" target="_blank" class="social-btn instagram" title="Instagram">📷</a>
+                    {% endif %}
+                    {% if society.linkedin %}
+                    <a href="{{ society.linkedin }}" target="_blank" class="social-btn linkedin" title="LinkedIn">in</a>
+                    {% endif %}
+                    {% if society.twitter %}
+                    <a href="{{ society.twitter }}" target="_blank" class="social-btn twitter" title="Twitter">𝕏</a>
+                    {% endif %}
+                    {% if society.website %}
+                    <a href="{{ society.website }}" target="_blank" class="social-btn website" title="Website">🌐</a>
+                    {% endif %}
+                    {% if society.email %}
+                    <a href="mailto:{{ society.email }}" class="social-btn email" title="Email">📧</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tab Navigation -->
+<nav class="society-tabs-nav sticky">
+    <div class="container">
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="overview">📊 Overview</button>
+            <button class="tab-btn" data-tab="events">📅 Events</button>
+            <button class="tab-btn" data-tab="team">👥 Team</button>
+            <button class="tab-btn" data-tab="gallery">📸 Gallery</button>
+            <button class="tab-btn" data-tab="achievements">🏆 Achievements</button>
+            <button class="tab-btn" data-tab="chat">💬 Chat</button>
+        </div>
+    </div>
+</nav>
+
+<!-- Tab Content -->
+<div class="container society-content">
+    
+    <!-- Overview Tab -->
+    <div class="tab-panel active" id="tab-overview">
+        <div class="overview-grid">
+            <!-- About Section -->
+            <div class="content-card about-card">
+                <h2 class="card-title">About Us</h2>
+                <p class="about-text">{{ society.long_description|default:society.description|linebreaks }}</p>
+                
+                <div class="society-info-grid">
+                    <div class="info-item">
+                        <span class="info-icon">🎂</span>
+                        <span class="info-label">Founded</span>
+                        <span class="info-value">{{ society.founding_year|default:"2020" }}</span>
+                    </div>
+                    {% if society.president_name %}
+                    <div class="info-item">
+                        <span class="info-icon">👤</span>
+                        <span class="info-label">President</span>
+                        <span class="info-value">{{ society.president_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if society.convenor_name %}
+                    <div class="info-item">
+                        <span class="info-icon">🧭</span>
+                        <span class="info-label">Convenor</span>
+                        <span class="info-value">{{ society.convenor_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if society.faculty_advisor %}
+                    <div class="info-item">
+                        <span class="info-icon">🎓</span>
+                        <span class="info-label">Faculty Advisor</span>
+                        <span class="info-value">{{ society.faculty_advisor }}</span>
+                    </div>
+                    {% endif %}
+                    {% if society.email %}
+                    <div class="info-item">
+                        <span class="info-icon">📧</span>
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ society.email }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Announcements -->
+            <div class="content-card announcements-card">
+                <h2 class="card-title">📢 Latest Announcements</h2>
+                <div class="announcements-list">
+                    {% for announcement in announcements %}
+                    <div class="announcement-item priority-{{ announcement.priority }}" style="--accent: {{ society.color_theme }};">
+                        <div class="announcement-header">
+                            <span class="priority-indicator"></span>
+                            <h4>{{ announcement.title }}</h4>
+                            <span class="priority-badge {{ announcement.priority }}">{{ announcement.get_priority_display }}</span>
+                        </div>
+                        <p>{{ announcement.content|truncatewords:25 }}</p>
+                        <span class="announcement-time">{{ announcement.created_at|timesince }} ago</span>
+                    </div>
+                    {% empty %}
+                    <p class="no-data">No announcements yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Quick Stats Card -->
+            <div class="content-card stats-card">
+                <h2 class="card-title">📊 Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item" style="--accent: #00d77a;">
+                        <div class="stat-number">{{ society.member_count|default:0 }}</div>
+                        <div class="stat-label">Members</div>
+                        <div class="stat-bar"><div class="stat-fill" style="width: 80%;"></div></div>
+                    </div>
+                    <div class="stat-item" style="--accent: #00d7ff;">
+                        <div class="stat-number">{{ stats.total_events|default:0 }}</div>
+                        <div class="stat-label">Total Events</div>
+                        <div class="stat-bar"><div class="stat-fill" style="width: 65%;"></div></div>
+                    </div>
+                    <div class="stat-item" style="--accent: #ff6b6b;">
+                        <div class="stat-number">{{ stats.upcoming_events|default:0 }}</div>
+                        <div class="stat-label">Upcoming</div>
+                        <div class="stat-bar"><div class="stat-fill" style="width: 40%;"></div></div>
+                    </div>
+                    <div class="stat-item" style="--accent: #ffd93d;">
+                        <div class="stat-number">{{ society.founding_year|default:"2020" }}</div>
+                        <div class="stat-label">Since</div>
+                        <div class="stat-bar"><div class="stat-fill" style="width: 100%;"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Events Tab -->
+    <div class="tab-panel" id="tab-events">
+        <div class="events-section">
+            <h2 class="section-title">🔥 Upcoming Events</h2>
+            <div class="events-grid">
+                {% for event in upcoming_events %}
+                <div class="event-card" style="--accent: {{ society.color_theme }};">
+                    {% if event.event_image %}
+                    <div class="event-image">
+                        <img src="{{ event.event_image }}" alt="{{ event.title }}">
+                        <span class="event-type-badge">{{ event.get_event_type_display }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-content">
+                        <h3>{{ event.title }}</h3>
+                        <p>{{ event.description|truncatewords:20 }}</p>
+                        <div class="event-meta">
+                            <span class="event-date">📅 {{ event.event_date|date:"M d, Y" }}</span>
+                            <span class="event-time">⏰ {{ event.event_date|date:"g:i A" }}</span>
+                            <span class="event-location">📍 {{ event.location }}</span>
+                        </div>
+                        {% if event.registration_link %}
+                        <a href="{{ event.registration_link }}" target="_blank" class="btn-register">Register Now →</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-data-card">
+                    <span class="no-data-icon">📅</span>
+                    <p>No upcoming events scheduled.</p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if past_events %}
+            <h2 class="section-title" style="margin-top: 3rem;">📜 Past Events</h2>
+            <div class="events-grid past-events">
+                {% for event in past_events %}
+                <div class="event-card past">
+                    <div class="event-content">
+                        <span class="completed-badge">✓ Completed</span>
+                        <h3>{{ event.title }}</h3>
+                        <div class="event-meta">
+                            <span class="event-date">📅 {{ event.event_date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Team Tab -->
+    <div class="tab-panel" id="tab-team">
+        <div class="team-section">
+            <h2 class="section-title">🌟 Leadership Team</h2>
+            <div class="team-grid leadership">
+                {% for member in leadership %}
+                <div class="member-card leadership-card" style="--accent: {{ society.color_theme }};">
+                    <div class="member-avatar">
+                        {% if member.profile_image %}
+                        <img src="{{ member.profile_image }}" alt="{{ member.name }}">
+                        {% else %}
+                        <div class="avatar-placeholder">{{ member.name|slice:":1"|upper }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="member-info">
+                        <h3>{{ member.name }}</h3>
+                        <span class="member-role">{{ member.get_role_display }}</span>
+                        {% if member.bio %}
+                        <p class="member-bio">{{ member.bio|truncatewords:15 }}</p>
+                        {% endif %}
+                        <div class="member-social">
+                            {% if member.linkedin %}
+                            <a href="{{ member.linkedin }}" target="_blank" class="member-social-btn">in</a>
+                            {% endif %}
+                            {% if member.instagram %}
+                            <a href="{{ member.instagram }}" target="_blank" class="member-social-btn">📷</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-data-card">
+                    <span class="no-data-icon">👥</span>
+                    <p>Team information coming soon.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gallery Tab -->
+    <div class="tab-panel" id="tab-gallery">
+        <div class="gallery-section">
+            <h2 class="section-title">📸 Photo Gallery</h2>
+            <div class="gallery-grid">
+                {% for photo in gallery %}
+                <div class="gallery-item" onclick="openLightbox('{{ photo.image_url }}', '{{ photo.title }}')">
+                    <img src="{{ photo.image_url }}" alt="{{ photo.title }}" loading="lazy">
+                    <div class="gallery-overlay">
+                        <span class="gallery-title">{{ photo.title }}</span>
+                        <span class="gallery-likes">❤️ {{ photo.likes_count }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-data-card full-width">
+                    <span class="no-data-icon">📷</span>
+                    <p>No photos uploaded yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Achievements Tab -->
+    <div class="tab-panel" id="tab-achievements">
+        <div class="achievements-section">
+            <h2 class="section-title">🏆 Achievements & Awards</h2>
+            <div class="achievements-timeline">
+                {% for achievement in achievements %}
+                <div class="achievement-item" style="--accent: {{ society.color_theme }};">
+                    <div class="achievement-icon">{{ achievement.icon }}</div>
+                    <div class="achievement-content">
+                        <h3>{{ achievement.title }}</h3>
+                        <p>{{ achievement.description }}</p>
+                        <span class="achievement-date">{{ achievement.achievement_date|date:"F Y" }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-data-card">
+                    <span class="no-data-icon">🏆</span>
+                    <p>Achievements will be added soon.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        {% if faqs %}
+        <div class="faq-section">
+            <h2 class="section-title">❓ Frequently Asked Questions</h2>
+            <div class="faq-list">
+                {% for faq in faqs %}
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>{{ faq.question }}</span>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>{{ faq.answer }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Chat Tab -->
+    <div class="tab-panel" id="tab-chat">
+        <div class="chat-section">
+            <h2 class="section-title">💬 Society Chat Room</h2>
+            <div class="chat-container large" style="--accent: {{ society.color_theme }};">
+                <div class="chat-header">
+                    <div class="chat-status">
+                        <span class="status-dot online"></span>
+                        <span>Live Chat</span>
+                    </div>
+                    <span class="chat-members">{{ stats.total_members|default:0 }} members</span>
+                </div>
+                <div class="chat-messages" id="societyChatMessages">
+                    {% for msg in chat_messages reversed %}
+                    <div class="chat-message">
+                        <div class="message-avatar">{{ msg.user_name|slice:":1"|upper }}</div>
+                        <div class="message-content">
+                            <span class="chat-user">{{ msg.user_name }}</span>
+                            <span class="chat-text">{{ msg.message }}</span>
+                            <span class="chat-time">{{ msg.created_at|date:"g:i A" }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="chat-empty">
+                        <span>💬</span>
+                        <p>Be the first to start a conversation!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="societyUserName" placeholder="Your Name" class="chat-name-input">
+                    <input type="text" id="societyChatMessage" placeholder="Type your message..." class="chat-input">
+                    <button onclick="sendSocietyMessage()" class="chat-send-btn">Send ➤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Similar Societies -->
+{% if similar_societies %}
+<section class="similar-societies-section">
+    <div class="container">
+        <h2 class="section-title">🔗 Similar Societies</h2>
+        <div class="similar-grid">
+            {% for sim in similar_societies %}
+            <a href="{% url 'society_detail' sim.id %}" class="similar-card">
+                <div class="similar-logo">
+                    {% if sim.logo_image %}
+                    <img src="{{ sim.logo_image }}" alt="{{ sim.name }}">
+                    {% else %}
+                    <div class="logo-placeholder" style="background: {{ sim.color_theme }};">{{ sim.name|slice:":2"|upper }}</div>
+                    {% endif %}
+                </div>
+                <h4>{{ sim.name }}</h4>
+                <span class="similar-category">{{ sim.get_category_display|default:"Society" }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Lightbox Modal -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img src="" alt="" id="lightbox-image">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const societyId = {{ society.id }};
+    
+    // Tab Navigation
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        });
+    });
+    
+    // Chat Functions
+    function sendSocietyMessage() {
+        const userName = document.getElementById('societyUserName').value || 'Anonymous';
+        const message = document.getElementById('societyChatMessage').value;
+        if (!message.trim()) return;
+        
+        fetch(`/api/chat/society/${societyId}/`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_name: userName, message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadSocietyMessages();
+                document.getElementById('societyChatMessage').value = '';
+            }
+        });
+    }
+    
+    function loadSocietyMessages() {
+        fetch(`/api/chat/society/${societyId}/messages/`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('societyChatMessages');
+            if (data.messages && data.messages.length > 0) {
+                container.innerHTML = data.messages.reverse().map(msg => `
+                    <div class="chat-message">
+                        <div class="message-avatar">${msg.user_name.charAt(0).toUpperCase()}</div>
+                        <div class="message-content">
+                            <span class="chat-user">${msg.user_name}</span>
+                            <span class="chat-text">${msg.message}</span>
+                            <span class="chat-time">${msg.created_at}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            container.scrollTop = container.scrollHeight;
+        });
+    }
+    
+    // Lightbox
+    function openLightbox(src, caption) {
+        document.getElementById('lightbox-image').src = src;
+        document.getElementById('lightbox-caption').textContent = caption;
+        document.getElementById('lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // FAQ Toggle
+    function toggleFaq(element) {
+        element.parentElement.classList.toggle('active');
+    }
+    
+    setInterval(loadSocietyMessages, 5000);
+    document.getElementById('societyChatMessage')?.addEventListener('keypress', e => { if (e.key === 'Enter') sendSocietyMessage(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+{% endblock %}
+                        <h3>{{ event.title }}</h3>
+                        <span class="event-badge">{{ event.get_event_type_display }}</span>
+                    </div>
+                    <p class="event-item-description">{{ event.description }}</p>
+                    <div class="event-item-meta">
+                        <span>📅 {{ event.event_date|date:"M d, Y - g:i A" }}</span>
+                        <span>📍 {{ event.location }}</span>
+                    </div>
+                    {% if event.registration_link %}
+                    <a href="{{ event.registration_link }}" class="btn-small" target="_blank">Register Now</a>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p class="no-data">No upcoming events.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Announcements -->
+        <div class="content-block">
+            <h2 class="block-title">Announcements</h2>
+            <div class="announcements-list">
+                {% for announcement in announcements %}
+                <div class="announcement-item priority-{{ announcement.priority }}">
+                    <div class="announcement-header">
+                        <h4>{{ announcement.title }}</h4>
+                        <span class="priority-badge">{{ announcement.get_priority_display }}</span>
+                    </div>
+                    <p>{{ announcement.content }}</p>
+                    <span class="announcement-time">{{ announcement.created_at|date:"M d, Y - g:i A" }}</span>
+                </div>
+                {% empty %}
+                <p class="no-data">No announcements.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Society Chat -->
+    <div class="society-sidebar">
+        <div class="content-block sticky-chat">
+            <h2 class="block-title">Society Chat</h2>
+            <div class="chat-container small">
+                <div class="chat-messages" id="societyChatMessages">
+                    {% for msg in chat_messages reversed %}
+                    <div class="chat-message">
+                        <span class="chat-user">{{ msg.user_name }}</span>
+                        <span class="chat-text">{{ msg.message }}</span>
+                        <span class="chat-time">{{ msg.created_at|date:"g:i A" }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="societyUserName" placeholder="Your Name" class="chat-name-input">
+                    <input type="text" id="societyChatMessage" placeholder="Message..." class="chat-input">
+                    <button onclick="sendSocietyMessage()" class="chat-send-btn">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const societyId = {{ society.id }};
+    
+    function sendSocietyMessage() {
+        const userName = document.getElementById('societyUserName').value || 'Anonymous';
+        const message = document.getElementById('societyChatMessage').value;
+        
+        if (!message.trim()) return;
+        
+        fetch(`/api/chat/society/${societyId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ user_name: userName, message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadSocietyMessages();
+                document.getElementById('societyChatMessage').value = '';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    function loadSocietyMessages() {
+        fetch(`/api/chat/society/${societyId}/messages/`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('societyChatMessages');
+            container.innerHTML = data.messages.reverse().map(msg => `
+                <div class="chat-message">
+                    <span class="chat-user">${msg.user_name}</span>
+                    <span class="chat-text">${msg.message}</span>
+                    <span class="chat-time">${msg.created_at}</span>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        });
+    }
+    
+    // Auto-refresh chat every 5 seconds
+    setInterval(loadSocietyMessages, 5000);
+    
+    // Enter key to send message
+    document.getElementById('societyChatMessage')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendSocietyMessage();
+    });
+</script>
+{% endblock %}

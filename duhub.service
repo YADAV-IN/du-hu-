@@ -1,0 +1,59 @@
+# Systemd Service for DUHub Django Application
+
+# File: /etc/systemd/system/duhub.service
+# This will run gunicorn automatically on server start
+
+[Unit]
+Description=DUHub Django Application
+After=network.target
+Wants=duhub.socket
+
+[Socket]
+ListenStream=127.0.0.1:8000
+Accept=false
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=notify
+PIDFile=/run/duhub.pid
+
+# User to run the service
+User=ubuntu
+Group=www-data
+
+# Working directory
+WorkingDirectory=/home/ubuntu/codespaces-django
+
+# Virtual environment
+Environment="PATH=/home/ubuntu/codespaces-django/env/bin"
+ExecStartPre=/home/ubuntu/codespaces-django/env/bin/python manage.py migrate
+ExecStartPre=/home/ubuntu/codespaces-django/env/bin/python manage.py collectstatic --noinput
+
+# Start command
+ExecStart=/home/ubuntu/codespaces-django/env/bin/gunicorn \
+    --workers 3 \
+    --worker-class sync \
+    --bind 127.0.0.1:8000 \
+    --timeout 30 \
+    --access-logfile - \
+    --error-logfile - \
+    hello_world.wsgi:application
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Process management
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Resource limits
+LimitNOFILE=65535
+LimitNPROC=65535
+
+# Standard output/error
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=duhub

@@ -23,7 +23,31 @@ from django.conf.urls.static import static
 from hello_world.core import views as core_views
 
 urlpatterns = [
-    path("", core_views.index),
+    path("", core_views.index, name='home'),
+    path("society/<int:society_id>/", core_views.society_detail, name='society_detail'),
+    path("events/", core_views.all_events, name='all_events'),
+    
+    # Chat API endpoints
+    path("api/chat/global/", core_views.send_global_message, name='send_global_message'),
+    path("api/chat/global/messages/", core_views.get_global_messages, name='get_global_messages'),
+    path("api/chat/society/<int:society_id>/", core_views.send_society_message, name='send_society_message'),
+    path("api/chat/society/<int:society_id>/messages/", core_views.get_society_messages, name='get_society_messages'),
+    
+    # Admin Panel Routes
+    path("admin-login/", core_views.admin_login, name='admin_login'),
+    path("admin-dashboard/", core_views.admin_dashboard, name='admin_dashboard'),
+    path("manage-society/<int:society_id>/", core_views.manage_society, name='manage_society'),
+    path("verify-code/<int:society_id>/", core_views.verify_access_code, name='verify_code'),
+    path("admin-logout/", core_views.admin_logout, name='admin_logout'),
+    path("admin-login-records/", core_views.admin_login_records, name='admin_login_records'),
+    
+    # Developer Admin Routes
+    path("developer-login/", core_views.developer_login, name='developer_login'),
+    path("developer-dashboard/", core_views.developer_dashboard, name='developer_dashboard'),
+    path("create-admin/", core_views.create_admin, name='create_admin'),
+    path("manage-admin/<int:admin_id>/", core_views.manage_admin, name='manage_admin'),
+    path("developer-logout/", core_views.developer_logout, name='developer_logout'),
+    
     path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

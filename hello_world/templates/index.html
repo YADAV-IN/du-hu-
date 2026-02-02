@@ -1,33 +1,797 @@
-{% load django_browser_reload %}
+{% extends 'base.html' %}
 {% load static %}
 
-<!doctype html>
-<html lang="en">
+{% block title %}DU HUB UNOFFICIAL - Home{% endblock %}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="GitHub Codespaces ♥️ Django">
-    <meta name="author" content="GitHub Codespaces">
-    <meta name="generator" content="GitHub Codespaces">
-    <meta name="theme-color" content="#000000">
-    <title>{% block title %}{{ title }} | GitHub Codespaces ♥️ Django{% endblock %}</title>
-    
-    <link rel="stylesheet" href="{% static 'main.css' %}">
-</head>
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1 class="hero-title">Welcome to DU HUB UNOFFICIAL</h1>
+        <p class="hero-subtitle">Your Campus Community Platform</p>
+        <p class="hero-domain">🌐 duhubunofficial.local</p>
+        
+        <!-- Stats Cards -->
+        <div class="hero-stats">
+            <div class="stat-card">
+                <span class="stat-number">{{ societies.count }}</span>
+                <span class="stat-label">Societies</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ upcoming_events.count }}</span>
+                <span class="stat-label">Events</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ recent_announcements.count }}</span>
+                <span class="stat-label">Updates</span>
+            </div>
+        </div>
 
-<body>
-    <div class="App">
-        <header class="App-header">
-            <img src="{% static 'Octocat.png' %}" class="App-logo" alt="logo" />
-            <p>
-                GitHub Codespaces <span class="heart">♥️</span> Django
-            </p>
-            <p class="small">
-                Edit <code>hello_world/templates/index.html</code> and see changes live!
-            </p>
-        </header>
+        <!-- Scrollable Societies Carousel -->
+        <div class="societies-carousel-wrapper">
+            <p class="carousel-label">Explore Societies</p>
+            <div class="societies-carousel">
+                {% for society in societies %}
+                <a href="/society/{{ society.id }}/" class="society-card-3d">
+                    <div class="card-inner">
+                        <div class="card-front" style="background: linear-gradient(135deg, {{ society.color_theme|default:'#2196F3' }}, {{ society.color_theme|default:'#00BCD4' }});">
+                            <div class="card-icon">
+                                {% if society.logo_image %}
+                                    <img src="{{ society.logo_image }}" alt="{{ society.name }}" class="card-logo">
+                                {% else %}
+                                    <div class="icon-placeholder">{{ society.name|slice:":1"|upper }}</div>
+                                {% endif %}
+                            </div>
+                            <h3 class="card-title">{{ society.name }}</h3>
+                        </div>
+                        <div class="card-back">
+                            <p class="card-description">{{ society.description|truncatewords:12 }}</p>
+                            <div class="card-stats">
+                                <span class="stat">👥 {{ society.member_count|default:"0" }}</span>
+                                <span class="stat">📅 {{ society.events.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-</body>
+</section>
 
-</html>
+<!-- Announcements Ticker -->
+<section class="announcements-ticker">
+    <div class="ticker-label">📢 Live Updates</div>
+    <div class="ticker-wrapper">
+        <div class="ticker-content">
+            {% for announcement in recent_announcements %}
+                <span class="ticker-item priority-{{ announcement.priority }}">
+                    <strong style="color: #00d77a;">● {{ announcement.society.name }}:</strong> {{ announcement.title }}
+                </span>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events -->
+<section class="section" id="events">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Upcoming Events</h2>
+            <a href="/events/" class="view-all-link">View All →</a>
+        </div>
+        <div class="events-grid">
+            {% for event in upcoming_events %}
+            <div class="event-card">
+                <div class="event-header">
+                    <span class="event-type-badge">{{ event.get_event_type_display }}</span>
+                    <span class="event-date">{{ event.event_date|date:"M d" }}</span>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <p class="event-society">{{ event.society.name }}</p>
+                    <p class="event-description">{{ event.description|truncatewords:20 }}</p>
+                    <div class="event-footer">
+                        <span class="event-location">
+                            <span>📍</span>
+                            {{ event.location }}
+                        </span>
+                        {% if event.registration_link %}
+                        <a href="{{ event.registration_link }}" class="rn-button rn-button-small" target="_blank">Register</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-data">No upcoming events at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Societies Section with Advanced Slider -->
+<!-- Societies Section - Mobile Optimized -->
+<section class="section" id="societies">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Our Societies</h2>
+            <a href="#societies" class="view-all-link">View All →</a>
+        </div>
+        
+        <div class="societies-grid">
+            {% for society in societies %}
+            <a href="/society/{{ society.id }}/" class="society-card">
+                <div class="society-card-image" style="background: linear-gradient(135deg, {{ society.color_theme|default:'#2196F3' }}, {{ society.color_theme|default:'#00BCD4' }});">
+                    {% if society.logo_image %}
+                    <div class="society-logo">
+                        <img src="{{ society.logo_image }}" alt="{{ society.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                    </div>
+                    {% else %}
+                    <div class="society-logo" style="color: {{ society.color_theme|default:'#2196F3' }};">
+                        {{ society.name|slice:":2"|upper }}
+                    </div>
+                    {% endif %}
+                    {% if society.is_verified %}
+                    <span class="verified-badge">✓</span>
+                    {% endif %}
+                </div>
+                <div class="society-card-content">
+                    <h3 class="society-name">{{ society.name }}</h3>
+                    {% if society.tagline %}
+                    <p class="society-tagline">{{ society.tagline|truncatewords:8 }}</p>
+                    {% else %}
+                    <p class="society-tagline">{{ society.description|truncatewords:10 }}</p>
+                    {% endif %}
+                    <div class="society-meta">
+                        <span class="meta-item">
+                            <span class="meta-icon">👥</span>
+                            {{ society.member_count|default:"0" }}
+                        </span>
+                        <span class="meta-item">
+                            <span class="meta-icon">📅</span>
+                            {{ society.events.count }}
+                        </span>
+                    </div>
+                    <span class="category-chip">{{ society.get_category_display|default:"Society" }}</span>
+                </div>
+            </a>
+            {% empty %}
+            <p class="no-data">No societies available</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Global Chat Section -->
+<section class="chat-section" id="chat">
+    <div class="container">
+        <div class="chat-header-section">
+            <h2 class="section-title">💬 DU Hub Chat</h2>
+            <div class="chat-stats">
+                <span class="stat-badge">🟢 <span id="activeCount">0</span> Active</span>
+                <span class="stat-badge">💬 <span id="messageCount">0</span> Messages</span>
+            </div>
+        </div>
+
+        <div class="chat-container modern-chat">
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar">
+                <div class="sidebar-header">
+                    <input type="text" id="searchMessages" placeholder="🔍 Search..." class="search-input">
+                </div>
+                <div class="user-profile-section">
+                    <div class="user-avatar large">
+                        <span id="userAvatarLetter">?</span>
+                    </div>
+                    <input type="text" id="userName" placeholder="Your Name" class="user-name-input" maxlength="20">
+                    <span class="online-badge">● Online</span>
+                </div>
+                <div class="chat-info">
+                    <div class="info-item">
+                        <span class="info-label">Messages Today</span>
+                        <span class="info-value" id="todayCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Active Users</span>
+                        <span class="info-value" id="activeUsers">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Main Area -->
+            <div class="chat-main">
+                <div class="chat-header modern">
+                    <div class="header-content">
+                        <h3>💬 Community Lounge</h3>
+                        <span class="header-subtitle">Real-time conversation</span>
+                    </div>
+                    <div class="header-controls">
+                        <button class="header-btn" title="Info">ℹ️</button>
+                        <button class="header-btn" title="Settings">⚙️</button>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messagesContainer">
+                    <div class="messages-list" id="globalChatMessages">
+                        <div class="welcome-message">
+                            <h4>Welcome to DU Hub Chat!</h4>
+                            <p>Share updates, ask questions, and connect with the community.</p>
+                        </div>
+                    </div>
+                    <div class="typing-indicator" id="typingIndicator" style="display:none;">
+                        <span>Someone is typing</span>
+                        <div class="dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="chat-input-section modern">
+                    <div class="input-toolbar">
+                        <button class="tool-btn emoji-btn" onclick="toggleEmojiPicker()" title="Emojis">😊</button>
+                        <button class="tool-btn" onclick="insertTemplate('excited')" title="Excited">🎉</button>
+                        <button class="tool-btn" onclick="insertTemplate('question')" title="Question">❓</button>
+                        <button class="tool-btn" onclick="insertTemplate('idea')" title="Idea">💡</button>
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="message-composer">
+                            <input type="text" id="chatMessage" placeholder="Type your message... (Shift+Enter for new line)" 
+                                   class="message-input" maxlength="500" autocomplete="off">
+                            <button onclick="sendGlobalMessage()" class="send-btn primary" title="Send (Ctrl+Enter)">
+                                <span class="send-animation">➤</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-footer">
+                        <div class="char-limit">
+                            <span id="charCount">0</span><span class="limit-text">/500</span>
+                        </div>
+                        <div class="message-hints">
+                            <span class="hint">💡 Tip: Press Enter to send</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Info Panel -->
+            <div class="chat-info-panel">
+                <div class="panel-header">
+                    <h4>Chat Info</h4>
+                    <button class="close-btn" onclick="toggleInfoPanel()">✕</button>
+                </div>
+                <div class="panel-content">
+                    <div class="info-block">
+                        <h5>Room Stats</h5>
+                        <div class="stats-list">
+                            <div class="stat">
+                                <span class="label">Messages</span>
+                                <span class="value" id="totalMessages">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="label">Users</span>
+                                <span class="value" id="uniqueUsers">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="active-users">
+                        <h5>Active Now</h5>
+                        <div class="users-list" id="activeUsersList">
+                            <p class="no-data">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Welcome Tour Modal - MANDATORY IDENTITY (NO SKIP/CLOSE) -->
+<div id="welcomeTourModal" class="tour-modal">
+    <div class="tour-overlay" style="pointer-events: none;"></div>
+    <div class="tour-container">
+        
+        <div class="tour-step" id="step1" style="display: block;">
+            <div class="tour-icon">🎉</div>
+            <h2>Welcome to DU Hub!</h2>
+            <p>Your Campus Community Platform</p>
+            <p class="tour-subtitle">Let's get you set up in just a few steps</p>
+            <button class="tour-btn-next" onclick="nextTourStep()">Let's Go →</button>
+        </div>
+
+        <div class="tour-step" id="step2" style="display: none;">
+            <div class="tour-icon">👤</div>
+            <h2>Create Your Identity</h2>
+            <p>Choose a name to represent you in the community</p>
+            <input type="text" id="tourNameInput" placeholder="Enter your name..." class="tour-input" maxlength="20" 
+                   onkeypress="if(event.key==='Enter') nextTourStep()">
+            <div class="tour-error" id="tourNameError" style="display: none;">Please enter a name</div>
+            <button class="tour-btn-next" onclick="nextTourStep()">Continue →</button>
+        </div>
+
+        <div class="tour-step" id="step3" style="display: none;">
+            <div class="tour-icon">💬</div>
+            <h2>Join the Chat</h2>
+            <p>Connect with your campus community in real-time</p>
+            <ul class="tour-features">
+                <li>💬 Share updates and news</li>
+                <li>❓ Ask questions</li>
+                <li>🎉 Celebrate together</li>
+            </ul>
+            <button class="tour-btn-next" onclick="nextTourStep()">Got It →</button>
+        </div>
+
+        <div class="tour-step" id="step4" style="display: none;">
+            <div class="tour-icon">🔍</div>
+            <h2>Explore Societies</h2>
+            <p>Browse and join societies that match your interests</p>
+            <ul class="tour-features">
+                <li>📚 Find your passion</li>
+                <li>👥 Meet like-minded people</li>
+                <li>📅 Never miss events</li>
+            </ul>
+            <button class="tour-btn-next" onclick="nextTourStep()">Almost Done →</button>
+        </div>
+
+        <div class="tour-step" id="step5" style="display: none;">
+            <div class="tour-icon">🎊</div>
+            <h2>Ready to Begin!</h2>
+            <p id="tourSummaryName" style="font-size: 18px; font-weight: bold; color: #128C7E; margin: 10px 0;">Your identity is ready!</p>
+            <p>You're all set to explore DU Hub</p>
+            <button class="tour-btn-next success" onclick="completeTour()">Start Exploring 🚀</button>
+        </div>
+
+        <div class="tour-progress">
+            <span id="progressStep">1</span> / 5
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Advanced Chat System with Device & Timezone Tracking
+    let currentUserName = localStorage.getItem('duHubUserName') || '';
+    let allMessages = [];
+    let activeUsers = new Set();
+    let typingTimeout;
+    let userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    let deviceInfo = {
+        type: detectDeviceType(),
+        name: detectDeviceName()
+    };
+
+    // Device Detection Functions
+    function detectDeviceType() {
+        const ua = navigator.userAgent.toLowerCase();
+        if (/mobile|iphone|ipod|opera mini/.test(ua)) return 'mobile';
+        if (/tablet|ipad|android/.test(ua)) return 'tablet';
+        if (/windows|macintosh|linux/.test(ua)) return 'desktop';
+        return 'web';
+    }
+
+    function detectDeviceName() {
+        const ua = navigator.userAgent;
+        // Extract browser and OS info
+        let browserName = 'Unknown Browser';
+        let osName = 'Unknown OS';
+        
+        if (ua.indexOf('Firefox') > -1) browserName = 'Firefox';
+        else if (ua.indexOf('Chrome') > -1) browserName = 'Chrome';
+        else if (ua.indexOf('Safari') > -1) browserName = 'Safari';
+        else if (ua.indexOf('Edge') > -1) browserName = 'Edge';
+        else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) browserName = 'Opera';
+        
+        if (ua.indexOf('Windows') > -1) osName = 'Windows';
+        else if (ua.indexOf('Mac') > -1) osName = 'macOS';
+        else if (ua.indexOf('Linux') > -1) osName = 'Linux';
+        else if (ua.indexOf('Android') > -1) osName = 'Android';
+        else if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) osName = 'iOS';
+        
+        return `${browserName} on ${osName}`;
+    }
+
+    function formatMessageTime(timestamp) {
+        try {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        } catch (e) {
+            return '00:00 AM';
+        }
+    }
+
+    function formatMessageDate(timestamp) {
+        try {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        } catch (e) {
+            return 'Unknown Date';
+        }
+    }
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Initialize Chat
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeTour();
+        setupChat();
+        loadGlobalMessages();
+        setInterval(loadGlobalMessages, 2000);
+    });
+
+    function setupChat() {
+        const userNameInput = document.getElementById('userName');
+        const chatInput = document.getElementById('chatMessage');
+        const charCount = document.getElementById('charCount');
+
+        if (currentUserName && userNameInput) {
+            userNameInput.value = currentUserName;
+            updateAvatarLetter();
+        }
+
+        if (chatInput) {
+            chatInput.addEventListener('input', function() {
+                if (charCount) charCount.textContent = this.value.length;
+            });
+
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendGlobalMessage();
+                }
+            });
+        }
+
+        if (userNameInput) {
+            userNameInput.addEventListener('blur', function() {
+                if (this.value.trim()) {
+                    localStorage.setItem('duHubUserName', this.value.trim());
+                    currentUserName = this.value.trim();
+                    updateAvatarLetter();
+                }
+            });
+
+            userNameInput.addEventListener('input', updateAvatarLetter);
+        }
+    }
+
+    function updateAvatarLetter() {
+        const userNameInput = document.getElementById('userName');
+        const avatarLetter = document.getElementById('userAvatarLetter');
+        if (userNameInput && avatarLetter) {
+            const firstLetter = (userNameInput.value.trim() || '?').charAt(0).toUpperCase();
+            avatarLetter.textContent = firstLetter;
+        }
+    }
+
+    function sendGlobalMessage() {
+        const userNameInput = document.getElementById('userName');
+        const messageInput = document.getElementById('chatMessage');
+        
+        let userName = userNameInput.value.trim() || 'Anonymous';
+        const message = messageInput.value.trim();
+
+        if (!message) {
+            messageInput.focus();
+            return;
+        }
+
+        localStorage.setItem('duHubUserName', userName);
+        currentUserName = userName;
+
+        const sendBtn = document.querySelector('.send-btn');
+        sendBtn.disabled = true;
+
+        // Send with timezone and device info
+        fetch('/api/chat/global/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Timezone': userTimezone
+            },
+            body: JSON.stringify({ 
+                user_name: userName, 
+                message,
+                timezone: userTimezone,
+                device_type: deviceInfo.type,
+                device_name: deviceInfo.name
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            messageInput.value = '';
+            document.getElementById('charCount').textContent = '0';
+            loadGlobalMessages();
+        })
+        .catch(error => console.error('Error:', error))
+        .finally(() => {
+            sendBtn.disabled = false;
+        });
+    }
+
+    function loadGlobalMessages() {
+        fetch('/api/chat/global/messages/')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('globalChatMessages');
+            if (!container) return;
+            
+            const currentUser = document.getElementById('userName').value.trim() || localStorage.getItem('duHubUserName') || 'Anonymous';
+            
+            // Update stats
+            updateStats(data.messages);
+            
+            // Clear welcome message if we have messages
+            if (data.messages.length > 0) {
+                container.innerHTML = '';
+            }
+            
+            const messagesHTML = data.messages.reverse().map(msg => {
+                const isOutgoing = msg.user_name === currentUser;
+                const bubbleClass = isOutgoing ? 'outgoing' : 'incoming';
+                
+                // Format time in 12-hour format
+                const timeStr = formatMessageTime(msg.timestamp || msg.created_at);
+                const dateStr = formatMessageDate(msg.timestamp || msg.created_at);
+                
+                // Device emoji
+                const deviceEmoji = {
+                    'web': '🌐',
+                    'mobile': '📱',
+                    'tablet': '📱',
+                    'desktop': '🖥️',
+                    'unknown': '❓'
+                };
+                const deviceIcon = deviceEmoji[msg.device_type] || '❓';
+                const deviceDisplay = msg.device_type !== 'unknown' ? `${deviceIcon} ${msg.device_type}` : '❓ Unknown';
+                
+                // Timezone display
+                const tzDisplay = msg.timezone ? `🌐 ${msg.timezone}` : '🌐 UTC';
+                
+                // Track active users
+                if (msg.user_name !== 'Anonymous') {
+                    activeUsers.add(msg.user_name);
+                }
+                
+                return `
+                    <div class="message-bubble ${bubbleClass}">
+                        <div class="bubble-content">
+                            ${!isOutgoing ? `<span class="message-sender">${escapeHtml(msg.user_name)}</span>` : ''}
+                            <p class="message-text">${escapeHtml(msg.message)}</p>
+                            <div class="message-meta" style="font-size: 0.75em; color: #999; margin-top: 4px; text-align: right;">
+                                <div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-bottom: 2px;">
+                                    <span title="${msg.device_name || 'Unknown Device'}">${deviceDisplay}</span>
+                                    <span title="User's Timezone">${tzDisplay}</span>
+                                </div>
+                                <span class="message-timestamp" title="${dateStr}">⏰ ${timeStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            if (data.messages.length > 0) {
+                container.innerHTML = messagesHTML;
+            }
+            
+            // Auto-scroll to bottom
+            const messagesContainer = document.getElementById('messagesContainer');
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        })
+        .catch(err => console.error('Error loading messages:', err));
+    }
+
+    function updateStats(messages) {
+        // Update message count
+        const messageCount = document.getElementById('messageCount');
+        if (messageCount) messageCount.textContent = messages.length;
+
+        // Update unique users
+        const uniqueUsers = new Set(messages.map(m => m.user_name)).size;
+        const uniqueUsersEl = document.getElementById('uniqueUsers');
+        if (uniqueUsersEl) uniqueUsersEl.textContent = uniqueUsers;
+
+        // Update total messages
+        const totalMessagesEl = document.getElementById('totalMessages');
+        if (totalMessagesEl) totalMessagesEl.textContent = messages.length;
+
+        // Update active count
+        const activeCount = document.getElementById('activeCount');
+        if (activeCount) activeCount.textContent = uniqueUsers;
+
+        // Update active users
+        const activeUsersList = document.getElementById('activeUsersList');
+        if (activeUsersList && messages.length > 0) {
+            const users = [...new Set(messages.map(m => m.user_name))].slice(0, 5);
+            activeUsersList.innerHTML = users.map(user => `
+                <div class="user-item">
+                    <span class="user-dot"></span>
+                    <span>${escapeHtml(user)}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function toggleEmojiPicker() {
+        const emojiList = ['😊', '😂', '❤️', '👍', '🔥', '✨', '🎉', '😍', '🤔', '😎', '🚀', '💯'];
+        const randomEmoji = emojiList[Math.floor(Math.random() * emojiList.length)];
+        
+        const messageInput = document.getElementById('chatMessage');
+        messageInput.value += randomEmoji;
+        messageInput.focus();
+        
+        document.getElementById('charCount').textContent = messageInput.value.length;
+    }
+
+    function insertTemplate(type) {
+        const messageInput = document.getElementById('chatMessage');
+        const templates = {
+            excited: '🎉 Great news! ',
+            question: '❓ Quick question: ',
+            idea: '💡 Idea: '
+        };
+        
+        messageInput.value += (templates[type] || '');
+        messageInput.focus();
+        document.getElementById('charCount').textContent = messageInput.value.length;
+    }
+
+    function toggleInfoPanel() {
+        const panel = document.querySelector('.chat-info-panel');
+        panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    // ===== WELCOME TOUR SYSTEM - MANDATORY IDENTITY =====
+    let currentTourStep = 1;
+    const MAX_TOUR_STEPS = 5;
+
+    function initializeTour() {
+        const hasSeenTour = localStorage.getItem('duHubTourCompleted');
+        const hasUserName = localStorage.getItem('duHubUserName');
+        
+        if (!hasSeenTour && !hasUserName) {
+            showTourModal();
+            disableChatSection(); // MANDATORY: Hide chat until identity created
+        } else if (hasUserName) {
+            hideTourModal();
+            loadUserIdentity();
+            enableChatSection(); // Enable chat after identity loaded
+        }
+    }
+
+    function showTourModal() {
+        const modal = document.getElementById('welcomeTourModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function hideTourModal() {
+        const modal = document.getElementById('welcomeTourModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    function nextTourStep() {
+        if (currentTourStep === 2) {
+            const nameInput = document.getElementById('tourNameInput');
+            const errorEl = document.getElementById('tourNameError');
+            
+            if (!nameInput.value.trim()) {
+                errorEl.style.display = 'block';
+                nameInput.focus();
+                return;
+            }
+            errorEl.style.display = 'none';
+            
+            // Save name to localStorage
+            const userName = nameInput.value.trim();
+            localStorage.setItem('duHubUserName', userName);
+            currentUserName = userName;
+        }
+
+        if (currentTourStep < MAX_TOUR_STEPS) {
+            document.getElementById(`step${currentTourStep}`).style.display = 'none';
+            currentTourStep++;
+            document.getElementById(`step${currentTourStep}`).style.display = 'block';
+            
+            // Update progress
+            document.getElementById('progressStep').textContent = currentTourStep;
+            
+            // Update summary name on step 5
+            if (currentTourStep === 5) {
+                const userName = localStorage.getItem('duHubUserName') || 'Friend';
+                document.getElementById('tourSummaryName').textContent = `Welcome, ${userName}! Your identity is ready!`;
+            }
+        }
+    }
+
+    function completeTour() {
+        localStorage.setItem('duHubTourCompleted', 'true');
+        hideTourModal();
+        loadUserIdentity();
+        enableChatSection(); // Enable chat after tour completion
+        
+        // Scroll to chat section
+        setTimeout(() => {
+            const chatSection = document.getElementById('chat');
+            if (chatSection) {
+                chatSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 500);
+    }
+    
+    // Enable/Disable chat section based on identity creation
+    function disableChatSection() {
+        const chatSection = document.getElementById('chat');
+        if (chatSection) {
+            chatSection.style.display = 'none';
+        }
+    }
+    
+    function enableChatSection() {
+        const chatSection = document.getElementById('chat');
+        if (chatSection) {
+            chatSection.style.display = 'block';
+        }
+    }
+
+    function loadUserIdentity() {
+        const userName = localStorage.getItem('duHubUserName');
+        if (userName) {
+            currentUserName = userName;
+            const userNameInput = document.getElementById('userName');
+            if (userNameInput) {
+                userNameInput.value = userName;
+                userNameInput.style.display = 'none'; // Hide the input field
+                updateAvatarLetter();
+            }
+            
+            // Show user name as display-only text
+            const profileSection = document.querySelector('.user-profile-section');
+            if (profileSection && !document.getElementById('userNameDisplay')) {
+                const userNameDisplay = document.createElement('div');
+                userNameDisplay.id = 'userNameDisplay';
+                userNameDisplay.style.cssText = `
+                    text-align: center;
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #212121;
+                    margin: 8px 0;
+                `;
+                userNameDisplay.textContent = userName;
+                
+                const userNameInput = document.getElementById('userName');
+                if (userNameInput && userNameInput.parentNode) {
+                    userNameInput.parentNode.insertBefore(userNameDisplay, userNameInput.nextSibling);
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}

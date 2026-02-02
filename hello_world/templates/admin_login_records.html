@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Login Records{% endblock %}
+
+{% block content %}
+<style>
+    .records-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    .records-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .records-header h1 {
+        font-size: 28px;
+        color: #212121;
+        margin: 0;
+    }
+
+    .back-link {
+        color: #128C7E;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: #f0f7f7;
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        background: #e0efef;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #128C7E, #075E54);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(18, 140, 126, 0.2);
+        text-align: center;
+    }
+
+    .stat-card h3 {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-value {
+        font-size: 36px;
+        font-weight: 700;
+    }
+
+    .records-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        background: #f8f9fa;
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #212121;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    thead {
+        background: #f8f9fa;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #424242;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        color: #424242;
+    }
+
+    tbody tr:hover {
+        background: #fafafa;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge.success {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .badge.danger {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .badge.info {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .user-cell {
+        font-weight: 600;
+        color: #128C7E;
+    }
+
+    .time-cell {
+        font-family: 'Monaco', monospace;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .device-cell {
+        font-size: 12px;
+        color: #999;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ip-cell {
+        font-family: 'Monaco', monospace;
+        font-weight: 600;
+    }
+
+    .admin-by-user {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .user-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #128C7E;
+    }
+
+    .user-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #128C7E;
+    }
+
+    .user-card span {
+        font-size: 24px;
+        font-weight: 700;
+        color: #075E54;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .records-header {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+
+        .device-cell {
+            max-width: 200px;
+        }
+    }
+</style>
+
+<div class="records-container">
+    <div class="records-header">
+        <h1>🔐 Admin Login Records</h1>
+        <a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Logins</h3>
+            <div class="stat-value">{{ total_logins }}</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #FF6B6B, #EE5A6F);">
+            <h3>Failed Attempts</h3>
+            <div class="stat-value">{{ failed_logins }}</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #4CAF50, #388E3C);">
+            <h3>Unique Admins</h3>
+            <div class="stat-value">{{ unique_admins }}</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #2196F3, #1976D2);">
+            <h3>Today's Logins</h3>
+            <div class="stat-value">{{ today_logins }}</div>
+        </div>
+    </div>
+
+    <!-- Logins by Admin -->
+    {% if logins_by_admin %}
+    <div class="records-section">
+        <div class="section-title">📊 Logins by Admin</div>
+        <div class="admin-by-user">
+            {% for stat in logins_by_admin %}
+            <div class="user-card">
+                <strong>{{ stat.admin_user }}</strong>
+                <span>{{ stat.count }}</span> logins
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Login Records Table -->
+    <div class="records-section">
+        <div class="section-title">📝 Complete Login Record</div>
+        {% if records %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Admin User</th>
+                        <th>Login Date & Time</th>
+                        <th>IP Address</th>
+                        <th>Browser</th>
+                        <th>Operating System</th>
+                        <th>Device Info</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td class="user-cell">{{ record.admin_user }}</td>
+                        <td class="time-cell">
+                            <strong>{{ record.login_date|date:"Y-m-d" }}</strong><br>
+                            {{ record.login_time|time:"H:i:s" }}
+                        </td>
+                        <td class="ip-cell">{{ record.ip_address }}</td>
+                        <td>{{ record.browser }}</td>
+                        <td>{{ record.operating_system }}</td>
+                        <td class="device-cell" title="{{ record.device_info }}">{{ record.device_info|truncatewords:3 }}</td>
+                        <td>
+                            {% if record.is_successful %}
+                                <span class="badge success">✓ Success</span>
+                            {% else %}
+                                <span class="badge danger">✗ Failed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h3>No login records found</h3>
+            <p>Admin login activity will appear here</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,457 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Developer Master Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .dev-dashboard {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .dev-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .dev-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dev-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+    }
+
+    .dev-controls {
+        display: flex;
+        gap: 15px;
+    }
+
+    .dev-btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .dev-btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .dev-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .dev-btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .dev-btn-secondary:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .dev-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .dev-stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .dev-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .dev-stat-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    .dev-stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #667eea;
+        margin: 10px 0;
+    }
+
+    .dev-stat-label {
+        font-size: 13px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .dev-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .dev-section-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 30px;
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dev-section-content {
+        padding: 30px;
+    }
+
+    .admins-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .admin-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .admin-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+    }
+
+    .admin-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .admin-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .admin-role {
+        display: inline-block;
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .admin-status {
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .admin-status.inactive {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .admin-details {
+        font-size: 13px;
+        color: #666;
+        margin: 12px 0;
+    }
+
+    .admin-details strong {
+        color: #333;
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .admin-action-btn {
+        flex: 1;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .admin-action-btn.edit {
+        background: #667eea;
+        color: white;
+    }
+
+    .admin-action-btn.edit:hover {
+        background: #764ba2;
+    }
+
+    .admin-action-btn.delete {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .admin-action-btn.delete:hover {
+        background: #f44336;
+        color: white;
+    }
+
+    .logs-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .logs-table th {
+        background: #f5f5f5;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #e0e0e0;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .logs-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .logs-table tbody tr:hover {
+        background: #fafafa;
+    }
+
+    .role-badge {
+        display: inline-block;
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .dev-header-top {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .dev-controls {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .admins-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .logs-table {
+            font-size: 12px;
+        }
+
+        .logs-table th,
+        .logs-table td {
+            padding: 10px;
+        }
+    }
+</style>
+
+<div class="dev-dashboard">
+    <div class="dev-container">
+        <div class="dev-header-top">
+            <h1 class="dev-title">👨‍💻 Developer Master Dashboard</h1>
+            <div class="dev-controls">
+                <a href="{% url 'create_admin' %}" class="dev-btn dev-btn-primary">
+                    ➕ Create New Admin
+                </a>
+                <a href="{% url 'developer_logout' %}" class="dev-btn dev-btn-secondary">
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="dev-stats-grid">
+            <div class="dev-stat-card">
+                <div class="dev-stat-icon">👥</div>
+                <div class="dev-stat-value">{{ total_admins }}</div>
+                <div class="dev-stat-label">Total Admins</div>
+            </div>
+            <div class="dev-stat-card">
+                <div class="dev-stat-icon">✅</div>
+                <div class="dev-stat-value">{{ active_admins }}</div>
+                <div class="dev-stat-label">Active Admins</div>
+            </div>
+            <div class="dev-stat-card">
+                <div class="dev-stat-icon">🏢</div>
+                <div class="dev-stat-value">{{ total_societies }}</div>
+                <div class="dev-stat-label">Total Societies</div>
+            </div>
+            <div class="dev-stat-card">
+                <div class="dev-stat-icon">📅</div>
+                <div class="dev-stat-value">{{ total_events }}</div>
+                <div class="dev-stat-label">Total Events</div>
+            </div>
+        </div>
+
+        <!-- Admins by Role -->
+        {% if admins_by_role %}
+        <div class="dev-section">
+            <div class="dev-section-header">
+                📊 Admins by Role
+            </div>
+            <div class="dev-section-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    {% for stat in admins_by_role %}
+                    <div class="dev-stat-card">
+                        <div class="dev-stat-value">{{ stat.count }}</div>
+                        <div class="dev-stat-label">
+                            {% for role_code, role_name in admin_roles %}
+                                {% if role_code == stat.role %}{{ role_name|truncatewords:2 }}{% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- All Admins Management -->
+        <div class="dev-section">
+            <div class="dev-section-header">
+                🔧 Manage Admins
+                <span style="font-size: 14px; opacity: 0.9;">{{ all_admins.count }} admins</span>
+            </div>
+            <div class="dev-section-content">
+                {% if all_admins %}
+                <div class="admins-grid">
+                    {% for admin in all_admins %}
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <div>
+                                <div class="admin-name">{{ admin.user.username }}</div>
+                                <span class="admin-role">{{ admin.get_role_display|truncatewords:2 }}</span>
+                            </div>
+                            <span class="admin-status {% if not admin.is_active %}inactive{% endif %}">
+                                {% if admin.is_active %}✓ Active{% else %}✗ Inactive{% endif %}
+                            </span>
+                        </div>
+                        <div class="admin-details">
+                            <strong>Email:</strong> {{ admin.user.email }}<br>
+                            <strong>Created:</strong> {{ admin.created_at|date:"M d, Y" }}<br>
+                            <strong>Societies:</strong> {{ admin.societies.count }}
+                        </div>
+                        <div class="admin-actions">
+                            <a href="{% url 'manage_admin' admin.id %}" class="admin-action-btn edit">Edit</a>
+                            <button class="admin-action-btn delete" onclick="if(confirm('Deactivate this admin?')) window.location='{% url 'manage_admin' admin.id %}?action=deactivate'">Delete</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <h3>No admins created yet</h3>
+                    <p><a href="{% url 'create_admin' %}" style="color: #667eea;">Create your first admin →</a></p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Activity Logs -->
+        {% if recent_logs %}
+        <div class="dev-section">
+            <div class="dev-section-header">
+                📝 Recent Activity Logs
+            </div>
+            <div class="dev-section-content">
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Resource</th>
+                            <th>Timestamp</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td>{{ log.action }}</td>
+                            <td><span class="role-badge">{{ log.resource_type }}</span></td>
+                            <td>{{ log.timestamp|date:"M d, Y H:i" }}</td>
+                            <td>{{ log.ip_address }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

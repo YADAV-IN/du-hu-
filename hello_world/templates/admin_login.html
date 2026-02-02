@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Login - DU HUB{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="admin-login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1 class="login-title">🔐 Admin Panel</h1>
+                    <p class="login-subtitle">DU HUB Control Center</p>
+                </div>
+
+                {% if error %}
+                <div class="error-message" style="background: #ffebee; color: #c62828; padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #c62828;">
+                    ⚠️ {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST" class="login-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-input" placeholder="Enter username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Enter password" required>
+                    </div>
+
+                    <button type="submit" class="btn-login">Login to Admin Panel</button>
+                </form>
+
+                <div class="login-footer">
+                    <p style="font-size: 12px; opacity: 0.6; margin-top: 16px;">Only admins can access this panel</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.admin-login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 20px;
+}
+
+.login-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--rn-primary);
+    margin: 0;
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: var(--rn-text-secondary);
+    margin: 8px 0 0 0;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rn-text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.form-input {
+    padding: 12px;
+    border: 2px solid var(--rn-bg-tertiary);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    font-family: inherit;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--rn-primary);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.btn-login {
+    padding: 12px;
+    background: linear-gradient(135deg, var(--rn-primary), var(--rn-secondary));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-top: 8px;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+.login-footer {
+    text-align: center;
+}
+</style>
+{% endblock %}

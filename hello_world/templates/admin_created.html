@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Account Created{% endblock %}
+
+{% block content %}
+<style>
+    .admin-created-page {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .admin-created-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 500px;
+        padding: 40px;
+        text-align: center;
+        animation: popIn 0.5s ease;
+    }
+
+    @keyframes popIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .success-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        animation: bounce 1s ease infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .success-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 10px 0;
+    }
+
+    .success-subtitle {
+        color: #999;
+        font-size: 14px;
+        margin: 0 0 30px 0;
+    }
+
+    .admin-info-card {
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 14px;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #999;
+        font-weight: 500;
+    }
+
+    .info-value {
+        color: #333;
+        font-weight: 600;
+        word-break: break-all;
+    }
+
+    .password-section {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .password-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        font-weight: 700;
+        color: #d39e00;
+    }
+
+    .password-label {
+        font-size: 12px;
+        color: #856404;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .password-box {
+        background: white;
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 2px solid #ffc107;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .copy-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+        background: #764ba2;
+    }
+
+    .password-warning {
+        background: #ffebee;
+        color: #c62828;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    .important-note {
+        background: #e8f5e9;
+        border-left: 4px solid #2e7d32;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: left;
+        font-size: 13px;
+        color: #1b5e20;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+
+    .action-btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .action-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .action-btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .action-btn-secondary:hover {
+        background: #f5f5f5;
+    }
+
+    .admin-details-section {
+        text-align: left;
+        margin: 20px 0;
+    }
+
+    .admin-details-section h3 {
+        margin-top: 0;
+        color: #333;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 480px) {
+        .admin-created-container {
+            padding: 25px;
+        }
+
+        .success-title {
+            font-size: 24px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="admin-created-page">
+    <div class="admin-created-container">
+        <div class="success-icon">✅</div>
+        <h1 class="success-title">Admin Account Created!</h1>
+        <p class="success-subtitle">The admin has been successfully added to your system</p>
+
+        <div class="admin-details-section">
+            <div class="admin-info-card">
+                <div class="info-row">
+                    <span class="info-label">👤 Username</span>
+                    <span class="info-value">{{ admin.user.username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📧 Email</span>
+                    <span class="info-value">{{ admin.user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">🎯 Role</span>
+                    <span class="info-value">{{ admin.get_role_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">⏰ Created</span>
+                    <span class="info-value">{{ admin.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="password-section">
+            <div class="password-header">
+                🔐 Temporary Password
+            </div>
+            <div class="password-label">Save this password securely. Admin must change it on first login.</div>
+            <div class="password-box">
+                <span id="temp-password">{{ temp_password }}</span>
+                <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+            </div>
+            <div class="password-warning">
+                ⚠️ <strong>Important:</strong> This password will only be shown once. Make sure to copy it before closing this page!
+            </div>
+        </div>
+
+        <div class="important-note">
+            <strong>📝 Next Steps:</strong><br>
+            1. Share this temporary password with the admin securely<br>
+            2. Admin must change password on their first login<br>
+            3. You can manage admin permissions from the dashboard<br>
+            4. All admin actions will be logged in the activity log
+        </div>
+
+        <div class="action-buttons">
+            <a href="{% url 'create_admin' %}" class="action-btn action-btn-secondary">
+                ➕ Create Another
+            </a>
+            <a href="{% url 'developer_dashboard' %}" class="action-btn action-btn-primary">
+                📊 Go to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard() {
+    const password = document.getElementById('temp-password').textContent;
+    navigator.clipboard.writeText(password).then(() => {
+        alert('✓ Password copied to clipboard!');
+    }).catch(() => {
+        alert('Failed to copy. Please copy manually.');
+    });
+}
+</script>
+
+{% endblock %}
